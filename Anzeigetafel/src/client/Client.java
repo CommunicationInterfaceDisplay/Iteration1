@@ -10,5 +10,5 @@ package client;
  * @author tobias
  */
 public class Client {
-    //Hallo Client
+    //Hallo Client!
 }
