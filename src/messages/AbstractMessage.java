@@ -10,5 +10,6 @@ package messages;
  * @author tobias
  */
 public class AbstractMessage {
+    //Hallo Message
     
 }
