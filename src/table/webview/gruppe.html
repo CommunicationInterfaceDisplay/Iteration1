@@ -1,0 +1,123 @@
+<html>
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <title>Gruppen Tafel</title>
+
+<style>
+
+.content{
+max-height:800px;overflow-y:auto;
+}
+#right{
+float:left;
+margin-left:25px;
+width:500px;
+}
+.header{
+min-height:50px;
+width:450px;
+background-color:#bbbbbb;
+}
+.titel{
+max-width:200px;
+float:left;
+font-size:1.5em;
+text-decoration:underline;
+padding-top:5px;
+padding-left:10px;
+}
+.ersteller{
+float:right;
+font-size:1.0em;
+padding-top:10px;
+padding-right:10px;
+max-width:200px;
+}
+.meta{
+min-height:20px;
+
+width:450px;
+background-color:#ddd;
+}
+.date{
+max-width:200px;
+
+float:left;
+font-size:1.0em;
+
+padding-top:5px;
+padding-left:10px;
+}
+.group{
+float:right;
+font-size:1.0em;
+padding-top:10px;
+padding-right:5px;
+max-width:200px;
+}
+.clear{
+clear:both;}
+.nachricht{
+background-color:#eee;
+float:none;
+font-size:1.0em;
+width:400px;
+padding:25px;
+padding-top:10px;
+}
+</style>
+
+<meta charset="utf-8" /> 
+
+
+</head>
+<body>
+<div class="content">
+<script>
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.open("GET","gruppe.xml",false);
+xmlhttp.send();
+xmlDoc=xmlhttp.responseXML; 
+
+
+var x=xmlDoc.getElementsByTagName("MESSAGE");
+for (i=0;i<x.length;i++)
+  { document.write("<div class='header'>"); 
+ document.write("<div class='titel'>");
+  document.write(x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue);
+ document.write("</div>");
+ document.write("<div class='ersteller'>Ersteller: ");
+  document.write(x[i].getElementsByTagName("USER")[0].childNodes[0].nodeValue);
+ document.write("</div>");document.write("<div class='clear'></div>"); document.write("</div>");
+ document.write("<div class='meta'>"); 
+ document.write("<div class='date'>Datum: ");
+  document.write(x[i].getElementsByTagName("DATE")[0].childNodes[0].nodeValue);
+ document.write("</div>");
+ document.write("<div class='group'>Abteilung: ");
+  document.write(x[i].getElementsByTagName("TABLE")[0].childNodes[0].nodeValue);
+ document.write("</div>");document.write("<div class='clear'></div>"); document.write("</div>");
+ document.write("<div class='nachricht more'>");
+  document.write(x[i].getElementsByTagName("TEXT")[0].childNodes[0].nodeValue);
+ document.write("</div>");
+
+
+
+
+
+
+  }
+
+    
+</script>
+</div>
+</body>
+<SCRIPT>$(document).ready(function(){var showChar=100;var ellipsestext="...";var moretext="weniger lesen";var lesstext="mehr lesen";$('.more').each(function(){var content=$(this).html();if(content.length>showChar){var c=content.substr(0,showChar);var h=content.substr(showChar-1,content.length-showChar);var html=c+'<span class="moreelipses">'+ellipsestext+'</span>&nbsp;<span class="morecontent"><span>'+h+'</span>&nbsp;&nbsp;<a href="" class="morelink">'+moretext+'</a></span>';$(this).html(html);}});$(".morelink").click(function(){if($(this).hasClass("less")){$(this).removeClass("less");$(this).html(moretext);}else{$(this).addClass("less");$(this).html(lesstext);}
+$(this).parent().prev().toggle();$(this).prev().toggle();return false;});});</SCRIPT>
+</html>

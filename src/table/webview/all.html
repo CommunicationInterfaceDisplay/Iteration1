@@ -1,0 +1,58 @@
+<html>
+<head>
+<meta charset="utf-8" /> 
+<title>Alle Tafeln</title>
+<style>
+#all{
+width:1100px;
+margin: 0 auto;
+left:50%;}
+#left{
+float:left; width:550px;}
+
+#right{
+float:left;
+margin-left:25px;
+width:500px;
+}
+
+</style>
+
+
+
+</head>
+<body>
+<script>
+ival = -1;
+
+function toggle ()
+{
+   if (ival < 0)
+      ival = setInterval ('frames[0].location.reload()', 30000);
+   else
+   {
+      clearInterval (ival);
+      ival = -1;
+   }
+}
+
+</script>
+<center>
+<input type="checkbox" onclick="toggle()"> Seite alle 30  Sekunden automatsich aktualisieren
+<div id="all">
+
+
+<div id="left">
+
+<center> Gruppentafel</center></br>
+<iframe src="gruppe.html" width="550px" height="850px" frameborder="0px"></iframe>
+
+</div>
+<div id="right">
+<center> Öffentliche Tafel</center></br>
+<iframe src="oeff.html" width="550px" height="850px" frameborder="0px"></iframe>
+</div></div>
+
+</body>
+
+</html>
