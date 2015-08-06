@@ -5,41 +5,48 @@ import java.io.*;
 import java.net.*;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.*;
 
 /**
  * @author Tobias Müller
- * @version 1.0
- * @date 02.07.2015
+ * @version 0.2
+ * @date 06.08.2015
  * 
  * Kommunikationsschnittstelle zwischen Tafeln und Clients
  */
 public class TableCommunicationGateway extends Thread {
 
     private final ConcurrentSkipListMap<String, InetAddress> tableRegister = new ConcurrentSkipListMap<>();
+
+    
     private final RegistrationService regService;
     private final MessageConsumingService msgConsumingService;
     private final MessagePublishingService msgPublishingService;
+    private final ClientCommunicationService clientCommunicationService;
     private final int registrationServicePort = 9876;
-    private final int messageTransportServicePort = 12345;
+    private final int messageTransportServicePort = 21000;
+    private final int clientCommunicationSerivcePort = 20000;
     
     /**
      * Konstruktor des TableCommunicationGateway (TCG)
-     * @param pis
-     * @param pos
+     * @param msgConPipe
+     * @param msgPubPipe
      * @throws IOException
      */
-    public TableCommunicationGateway(PipedInputStream pis, PipedOutputStream pos) throws IOException {
+    public TableCommunicationGateway(Pipe msgConPipe, Pipe msgPubPipe) throws IOException {
         // UDP-Datagramm schicken zur Anmeldung bei allen verfügbaren Tafeln
         
         System.out.println(RegistrationService.class.getSimpleName() + " wird konfiguriert...");
         regService = new RegistrationService(registrationServicePort);
 
         System.out.println(MessageConsumingService.class.getSimpleName() + " wird konfiguriert...");
-        msgConsumingService = new MessageConsumingService(messageTransportServicePort, pos);
+        msgConsumingService = new MessageConsumingService(messageTransportServicePort, msgConPipe);
 
         System.out.println(MessagePublishingService.class.getSimpleName() + " wird konfiguriert...");
-        msgPublishingService = new MessagePublishingService(messageTransportServicePort, pis);
+        msgPublishingService = new MessagePublishingService(messageTransportServicePort, msgPubPipe);
+        
+        System.out.println(ClientCommunicationService.class.getSimpleName() + " wird konfiguriert...");
+        clientCommunicationService = new ClientCommunicationService(clientCommunicationSerivcePort);
     }
 
     @Override
@@ -91,6 +98,7 @@ public class TableCommunicationGateway extends Thread {
                     if (tableRegister.containsKey(tableId) & tableRegister.containsValue(tableIP)) {
                         System.out.println("table schon angemeldet!");
                         // table war wohl zur laufzeit neugestartet worden! alle globalen nachrichten neu senden!
+                        //...
                     } else {
                         tableRegister.put(tableId, receivePacket.getAddress());
                     }
@@ -110,19 +118,18 @@ public class TableCommunicationGateway extends Thread {
 
         private final int port;
         private final ServerSocket serverSocket;
-        private final PipedOutputStream pipedOutputStream;
-
+        private final Pipe msgConsumingPipe;
         /**
          * Konstruktor
          * @param port
-         * @param pos
+         * @param msgConsumingPipe
          * @throws IOException 
          */
-        public MessageConsumingService(int port, PipedOutputStream pos) throws IOException {
+        public MessageConsumingService(int port, Pipe msgConsumingPipe) throws IOException {
             this.port = port;
             this.serverSocket = new ServerSocket(this.port);
             this.serverSocket.setSoTimeout(10000);
-            this.pipedOutputStream = pos;
+            this.msgConsumingPipe = msgConsumingPipe;
         }
 
         @Override
@@ -137,8 +144,9 @@ public class TableCommunicationGateway extends Thread {
                     } 
                     
                     ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+                    msgConsumingPipe.put(in.readObject());
                     //
-                } catch (IOException ex) {
+                } catch (IOException | ClassNotFoundException ex) {
 
                 }
             }
@@ -150,18 +158,18 @@ public class TableCommunicationGateway extends Thread {
      */
     public class MessagePublishingService extends Thread {
 
-        private final ObjectInputStream objectInputStream;
         private final int port;
+        private final Pipe msgPublishingPipe;
 
         /**
          * 
          * @param port
-         * @param pis
+         * @param msgPublishingPipe
          * @throws IOException 
          */
-        public MessagePublishingService(int port, PipedInputStream pis) throws IOException {
+        public MessagePublishingService(int port, Pipe msgPublishingPipe) throws IOException {
             this.port = port;
-            this.objectInputStream = new ObjectInputStream(pis);
+            this.msgPublishingPipe = msgPublishingPipe;
         }
 
         @Override
@@ -175,12 +183,23 @@ public class TableCommunicationGateway extends Thread {
 
                     out.flush();
 
-                    out.writeObject(objectInputStream.readObject());
+                    out.writeObject(msgPublishingPipe.get());
 
-                } catch (IOException ex) {
-                } catch (ClassNotFoundException ex) {
+                } catch (IOException | ClassNotFoundException ex) {
                 }
             }
         }
     }
+    
+    private class ClientCommunicationService extends Thread {
+
+        private final int port;
+        private final ServerSocket serverSocket;
+        
+        public ClientCommunicationService(int port) throws IOException {
+            this.port = port;
+            this.serverSocket = new ServerSocket(this.port);
+        }
+    }
+
 }
