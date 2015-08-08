@@ -5,10 +5,15 @@
  */
 package table.messageservice;
 
+import java.util.ArrayList;
+import messages.Message;
+
 /**
  *
  * @author tobias
  */
-public interface IMessageService {
-    
+public interface IMessageService{
+	public String id = "";
+	public ArrayList<Message> messageList = new ArrayList<>();
+	public boolean isOnline = false;
 }

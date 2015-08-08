@@ -5,10 +5,13 @@
  */
 package table;
 
+import table.messageservice.IMessageService;
+
 /**
  *
  * @author tobias
  */
-public class Table {
-    
+public class Table implements IMessageService
+{
+	
 }

@@ -9,7 +9,7 @@ package messages;
  *
  * @author tobias
  */
-public class AbstractMessage {
-    //Hallo Message
-    
+public abstract class AbstractMessage
+{
+	public String tableID = "";
 }
