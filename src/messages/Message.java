@@ -5,17 +5,18 @@
  */
 package messages;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Patrick
  */
-public class Message extends AbstractMessage
+public class Message extends AbstractMessage implements Serializable
 {
 	public String messageID = "";
 	public String title = "";
 	public String content = "";
 	public String author = "";
-	public Date dateOfChange = new Date("dd/M/yyyy");
+	public Date dateOfChange = new Date("14/8/2015"); //"dd/M/yyyy"
 }

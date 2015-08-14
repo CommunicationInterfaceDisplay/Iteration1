@@ -1,11 +1,15 @@
 
 package table.commlayer;
 
+import table.proxy.Pipe;
 import java.io.*;
 import java.net.*;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import messages.Message;
 
 /**
  * @author Tobias Müller
@@ -59,6 +63,9 @@ public class TableCommunicationGateway extends Thread {
 
         System.out.println(MessagePublishingService.class.getSimpleName() + " wird gestartet...");
         msgPublishingService.start();
+        
+        System.out.println(ClientCommunicationService.class.getSimpleName() + " wird gestartet...");
+        clientCommunicationService.start();
     }
 
     /**
@@ -174,20 +181,31 @@ public class TableCommunicationGateway extends Thread {
 
         @Override
         public void run() {
-            //@TODO zwischenpuffern und dann alle nachrichten an alle tables schicken
+            while (true) {
+               //@TODO zwischenpuffern und dann alle nachrichten an alle tables schicken
             Set<Map.Entry<String, InetAddress>> destinations = tableRegister.entrySet();
 
-            for (Map.Entry<String, InetAddress> entry : destinations) {
-                try (Socket socket = new Socket(entry.getValue(), port)) {                            
-                    ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            try {
+                //überlegen, ob Pipes sinnvoll sind... oder doch besser ein Shared Medium benutzen (Collection)
+                Message msg = (Message)msgPublishingPipe.get();
+            
+                System.out.println("Sende Daten...");
+                for (Map.Entry<String, InetAddress> entry : destinations) {
+                    try (Socket socket = new Socket(entry.getValue(), port)) {                            
+                        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-                    out.flush();
+                        out.flush();
 
-                    out.writeObject(msgPublishingPipe.get());
-
-                } catch (IOException | ClassNotFoundException ex) {
+                        out.writeObject(msg);
+                    }
                 }
+            } catch (IOException ex) {
+                //Exception wird dauerhalt ausgelöst -> in der Pipe muss gewartet werden, bis neues element verfügbar
+            } catch (ClassNotFoundException ex) {
+                
+            } 
             }
+            
         }
     }
     

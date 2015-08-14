@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package table.commlayer;
+package table.proxy;
 
 
 import java.io.IOException;
@@ -20,8 +20,8 @@ import java.io.PipedOutputStream;
  * Die Klasse Pipe soll dazu dienen, Objekte über Streams Thread-übergreifend zu steuern
  */
 public class Pipe {
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private final ObjectOutputStream out;
+    private final ObjectInputStream in;
     
     public Pipe() throws IOException {
         PipedOutputStream src = new PipedOutputStream();
@@ -38,4 +38,5 @@ public class Pipe {
     public Object get() throws IOException, ClassNotFoundException {
         return in.readObject();
     }
+        
 }
