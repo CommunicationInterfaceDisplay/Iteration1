@@ -5,8 +5,9 @@
  */
 package testbench;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import messages.Message;
-import table.proxy.Pipe;
 import table.commlayer.TableCommunicationGateway;
 /**
  *
@@ -16,17 +17,19 @@ public class TableCommGatewayTestbench {
     
     public static void main(String[] args) throws InterruptedException {
         try {
-            Pipe msgConPipe = new Pipe();
-            Pipe msgPubPipe = new Pipe();
-            TableCommunicationGateway gateway = new TableCommunicationGateway(msgConPipe, msgPubPipe);
+            TableCommunicationGateway gateway = new TableCommunicationGateway("TestServer");
             gateway.start();
+            
+            Message msg = new Message("0", "00000000", "title", "content...", "author", Date.from(Instant.now()));
+            gateway.outgoingQueue.put(msg);
             Thread.sleep(1000);
-            Message msg = new Message();
-            msgPubPipe.put(msg);
-            msgPubPipe.put(msg);
-            msgPubPipe.put(msg);
+            Message o;
+            while ((o = (Message)gateway.incomingQueue.get()) != null) {
+                System.out.println("Msg-ID: " + o.messageID);
+            }
+            
             Thread.sleep(1000);
-            msgPubPipe.put(msg);
+            
             //...
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

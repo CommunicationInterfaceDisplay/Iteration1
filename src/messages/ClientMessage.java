@@ -9,11 +9,14 @@ package messages;
  *
  * @author tobias
  */
-public abstract class AbstractMessage
-{
-	public String tableID = "";
-        
-        public AbstractMessage(String tableID) {
-            this.tableID = tableID;
-        }
+public class ClientMessage extends AbstractMessage {
+    
+    public String UserID = "";
+
+    public ClientMessage(String tableID, String userID) {
+        super(tableID);
+        this.UserID = userID;
+    }
+    
 }
+
