@@ -5,8 +5,11 @@
  */
 package testbench;
 import java.io.IOException;
+import java.net.*;
 import java.time.Instant;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import messages.Message;
 import table.commlayer.TableCommunicationGateway;
 /**
@@ -19,6 +22,10 @@ public class TableCommGatewayTestbench {
         try {
             TableCommunicationGateway gateway = new TableCommunicationGateway("TestServer");
             gateway.start();
+
+            receiveBroadcastTransmission();
+            Thread.sleep(1000);
+            
             
             Message msg = new Message("0", "00000000", "title", "content...", "author", Date.from(Instant.now()));
             gateway.outgoingQueue.put(msg);
@@ -33,6 +40,26 @@ public class TableCommGatewayTestbench {
             //...
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
+        }
+    }
+
+    /**
+     * Test für das Senden des TableIdentifiers
+     */
+    private static void receiveBroadcastTransmission() {
+        try {
+                DatagramSocket socket = new DatagramSocket(10001);
+            byte[] receiveData = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
+            socket.getBroadcast();
+            socket.receive(packet);
+            
+            System.out.println("Erhalte Broadcastmsg: " + new String(packet.getData()));
+            
+        } catch (SocketException ex) {
+            Logger.getLogger(TableCommGatewayTestbench.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(TableCommGatewayTestbench.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

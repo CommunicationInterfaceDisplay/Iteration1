@@ -22,12 +22,10 @@ import messages.ClientMessage;
  */
 public class ClientCommunicationService extends Thread {
 
-    private final int port;
     private final ServerSocket serverSocket;
 
-    public ClientCommunicationService(int port) throws IOException {
-        this.port = port;
-        this.serverSocket = new ServerSocket(this.port);
+    public ClientCommunicationService() throws IOException {
+        this.serverSocket = new ServerSocket(CommunicationConfiguration.ClientCommunicationSerivcePort);
     }
 
     @Override
@@ -59,18 +57,22 @@ public class ClientCommunicationService extends Thread {
         @Override
         public void run() {
             try {
-                ClientMessage msg = null;
+                ClientMessage msg;
                 do {
-                    out.writeObject(msg);
+                    msg = (ClientMessage)in.readObject();
                     if (msg instanceof ClientLoginMessage) {
-                        // übertragung aller nachrichten des Clients und blockiere
+                        // @TODO
+                        // übertragung aller nachrichten des Clients und blockiere diese, damit sich dieser User nicht nochmal verbinden kann
                         
                     } else if (msg instanceof ClientCommunicationMessage) {
-                        // unterscheidung der typen
+                        // @TODO
+                        // unterscheidung der typen, und je nachdem die Nachrichtenliste des Users anpassen
                     }
                 } while (!(msg instanceof ClientLogoutMessage));
             } catch (IOException ex) {
                 Logger.getLogger(TableCommunicationGateway.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ClientCommunicationService.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

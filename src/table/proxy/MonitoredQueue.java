@@ -6,7 +6,6 @@
 package table.proxy;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Semaphore;
 
 /**
  *
@@ -15,31 +14,24 @@ import java.util.concurrent.Semaphore;
  * Eine Implementierung eines Monitors mit threadsicherer Queue
  * @param <T>
  */
-public class Monitor<T> {
+public class MonitoredQueue<T> {
     private final ConcurrentLinkedQueue queue;
-    //Semaphore monitorSemaphore;
     
-    public Monitor() {
+    public MonitoredQueue() {
         queue = new ConcurrentLinkedQueue();
-        //monitorSemaphore = new Semaphore(1);
     }
     
     public void put(T o) {
-        //monitorSemaphore.acquireUninterruptibly();
         System.out.println("Opening...");
         synchronized (queue) {
-            
             queue.add(o);
             queue.notifyAll();
             System.out.println("New Element and notify all!");
         }
         System.out.println("Closing...");
-        //monitorSemaphore.release();
     }
     
-    public Object get() throws InterruptedException {
-        //monitorSemaphore.acquireUninterruptibly();
-        
+    public Object get() throws InterruptedException { 
         synchronized (queue) {
             while (queue.isEmpty()) {
                 System.out.println("queue is empty...");
@@ -47,7 +39,6 @@ public class Monitor<T> {
                 System.out.println("Waiting...");
             }
             T o = (T)queue.peek();
-            //monitorSemaphore.release();
         
             return o;
         }

@@ -18,6 +18,8 @@ import java.io.PipedOutputStream;
  * @version 0.5
  * 
  * Die Klasse Pipe soll dazu dienen, Objekte über Streams Thread-übergreifend zu steuern
+ * 
+ * !!! besser einen Monitor benutzen !!!
  */
 public class Pipe {
     private final ObjectOutputStream out;
