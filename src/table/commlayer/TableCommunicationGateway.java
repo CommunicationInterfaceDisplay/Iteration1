@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
 import messages.Message;
+import table.messageservice.AMessageService;
 import table.proxy.MonitoredQueue;
 
 /**
@@ -67,6 +68,18 @@ public class TableCommunicationGateway extends Thread {
         clientCommunicationService.start();
     }
 
+    public void SendMessageToTables(Message msg) {
+        
+    }
+    
+    public void SendAllMyMessagesToTables(AMessageService msgService) {
+        
+    }
+    
+    public void ReveiceMessageFromTable(Message msg) {
+        
+    }
+    
     /**
      * Nachrichtenempfangsdienst (MCS)
      */

@@ -77,7 +77,7 @@ public class TableRegistrationService extends Thread {
                     tableRegister.put(tableId, receivePacket.getAddress());
                 }
                 
-                ServerCommunicationWorker worker = new ServerCommunicationWorker(tableId, this.tableCommunicationThreads, receivePacket.getAddress());
+                MessageSenderPart worker = new MessageSenderPart(tableId, this.tableCommunicationThreads, receivePacket.getAddress());
                 worker.start();
             }
         } catch (SocketException ex) {

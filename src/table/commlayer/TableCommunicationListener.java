@@ -6,6 +6,7 @@
 package table.commlayer;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ public class TableCommunicationListener extends Thread {
             try {
                 Socket socket = listenerSocket.accept();
                 // in eine liste einfügen
-                Worker w = new Worker(tableCommGroup , socket, Integer.toString(counter));
+                MessageReceiverPart w = new MessageReceiverPart(tableCommGroup , socket, Integer.toString(counter));
                 
             } catch (IOException ex) {
                 Logger.getLogger(TableCommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
@@ -38,23 +39,29 @@ public class TableCommunicationListener extends Thread {
         }
     }
     
-    public class Worker extends Thread {
+    public class MessageReceiverPart extends Thread {
         
         private final Socket socket;
         
-        public Worker(ThreadGroup group, Socket socket, String counter) {
+        public MessageReceiverPart(ThreadGroup group, Socket socket, String counter) {
             super(group, counter);
             this.socket = socket;
         }
 
         @Override
         public void run() {
-            /*
-            1. Füge die Tafel das Register ein
-            2. Empfange Nachrichten der Gegenstelle und mache diese in die IngomingQueue
-            3. Sende die eigenen Nachrichten an die Gegenstelle
-            4. 
-            */
+            
+            try {
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                /*
+                1. Füge die Tafel das Register ein
+                2. Empfange Nachrichten der Gegenstelle und mache diese in die IngomingQueue
+                3. Sende die eigenen Nachrichten an die Gegenstelle
+                4.
+                */
+            } catch (IOException ex) {
+                Logger.getLogger(TableCommunicationListener.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

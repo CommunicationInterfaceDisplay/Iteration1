@@ -12,12 +12,12 @@ import java.net.*;
  *
  * @author tobias
  */
-public class ServerCommunicationWorker extends Thread {
+public class MessageSenderPart extends Thread {
 
     private final Socket workerSocket;
     
-    public ServerCommunicationWorker(String name, ThreadGroup group, InetAddress address) throws IOException {
-        super(group, name);
+    public MessageSenderPart(String name, ThreadGroup group, InetAddress address) throws IOException {
+        super(group, name + "-Sender");
         this.workerSocket = new Socket(address, CommunicationConfiguration.MssageTransportServicePort);
     }
 
